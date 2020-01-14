@@ -381,7 +381,7 @@ JAX-RS는 항상 컬렉션을 list로 비직렬화합니다.
 다음 프로토콜에 대한 처리자는 기본 JVM 내에 존재하는 http, https, ftp, ftp, file 및 jar를 보장합니다.
 ```
 
-**사용 예시**
+사용 예시
 
 ```java
 @Getter
@@ -407,7 +407,7 @@ public class Controller {
 }
 ```
 
-**테스트 코드**
+테스트 코드
 
 ```java
 @RunWith(SpringRunner.class)

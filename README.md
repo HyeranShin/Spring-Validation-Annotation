@@ -1,5 +1,6 @@
 # Spring Validation Annotation
 
+
 ### javax.validation
 - [@AssertFalse](#assertfalse)
 - [@AssertTrue](#asserttrue)
@@ -47,6 +48,79 @@
 - [@ScriptAssert](#scriptassertlang-script-alias-reporton)
 - [@UniqueElements](#uniqueelements)
 - [@URL](#urlprotocol-host-port-regexp-flags)
+
+#### 사용 예시
+
+```java
+@Getter
+public class RequestDto {
+
+    @URL(message = "유효한 URL 값이 아닙니다.")
+    private String url;
+
+    @URL(message = "깃허브 주소가 아닙니다.", protocol = "https", host = "github.com")
+    private String githubUrl;
+}
+
+```
+
+```java
+@RestController
+public class Controller {
+
+    @PostMapping
+    public ResponseEntity<Void> test(@Valid @RequestBody RequestDto requestDto) {
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+}
+```
+
+#### 테스트 코드
+
+```java
+@RunWith(SpringRunner.class)
+@WebMvcTest(Controller.class)
+public class ControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Test
+    public void validURL() throws Exception {
+        mockMvc.perform(post("")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"url\":\"http://www.naver.com\"}"))
+                .andExpect(status().isOk());
+    }
+
+
+    @Test
+    public void invalidURL() throws Exception {
+        mockMvc.perform(post("")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"url\":\"naver\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void validGithubURL() throws Exception {
+        mockMvc.perform(post("")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"githubUrl\":\"https://github.com/HyeranShin\"}"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void invalidGithubURL() throws Exception {
+        mockMvc.perform(post("")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"githubUrl\":\"http://www.naver.com\"}"))
+                .andExpect(status().isBadRequest());
+    }
+}
+```
+
+---
 
 #### @AssertFalse
 ```
@@ -379,75 +453,4 @@ JAX-RS는 항상 컬렉션을 list로 비직렬화합니다.
 기본적으로 이 제약 조건에 대한 유효성 검증은 java.net.URL 생성자를 사용하여 문자열의 유효성을 검증합니다.
 이는 일치하는 프로토콜 처리기를 사용할 수 있어야 함을 의미합니다.
 다음 프로토콜에 대한 처리자는 기본 JVM 내에 존재하는 http, https, ftp, ftp, file 및 jar를 보장합니다.
-```
-
-사용 예시
-
-```java
-@Getter
-public class RequestDto {
-
-    @URL(message = "유효한 URL 값이 아닙니다.")
-    private String url;
-
-    @URL(message = "깃허브 주소가 아닙니다.", protocol = "https", host = "github.com")
-    private String githubUrl;
-}
-
-```
-
-```java
-@RestController
-public class Controller {
-
-    @PostMapping
-    public ResponseEntity<Void> test(@Valid @RequestBody RequestDto requestDto) {
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-}
-```
-
-테스트 코드
-
-```java
-@RunWith(SpringRunner.class)
-@WebMvcTest(Controller.class)
-public class ControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Test
-    public void validURL() throws Exception {
-        mockMvc.perform(post("")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"url\":\"http://www.naver.com\"}"))
-                .andExpect(status().isOk());
-    }
-
-
-    @Test
-    public void invalidURL() throws Exception {
-        mockMvc.perform(post("")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"url\":\"naver\"}"))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void validGithubURL() throws Exception {
-        mockMvc.perform(post("")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"githubUrl\":\"https://github.com/HyeranShin\"}"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void invalidGithubURL() throws Exception {
-        mockMvc.perform(post("")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"githubUrl\":\"http://www.naver.com\"}"))
-                .andExpect(status().isBadRequest());
-    }
-}
 ```
